@@ -1,29 +1,21 @@
-import Head from 'next/head';
-import Link from 'next/link';
-import path from 'path';
-import FileTree from 'directory-tree'
+import Head from "next/head";
+import path from "path";
 
-import tree2list from '../util/tree2list';
+import LinkList from "../components/linkList";
+
+import { tree, tree2list } from '../util/tree'
 
 export async function getStaticProps() {
-	const tree = FileTree('./content', { extensions: /\.md$/ })
-	return {
-		props: {
-			posts: tree2list(tree, { sliceHead: 1 })
-		},
-	};
-}
-
-/** @typedef {Object} PostProps
- *  @property {string} post
- */ 
-/** @param {PostProps} props */
-function Post({ post }){
-	return(
-		<div>
-			<Link href={post}><a>{path.basename(post)}</a></Link>
-		</div>
-	)
+	const posts = tree2list(
+		await tree('content', {
+			extensions: [".md"],
+			includeDir: true,
+		}),
+		{
+			sliceHead: 1,
+		}
+	);
+	return { props: { posts } };
 }
 
 export default function Home({ posts }) {
@@ -34,7 +26,7 @@ export default function Home({ posts }) {
 				<link rel="icon" href="/favicon.ico" />
 			</Head>
 			<h1>Home</h1>
-			{posts.map(post => <Post key={post} post={post} />)}
+			<LinkList list={posts} />
 		</>
-	)
+	);
 }
