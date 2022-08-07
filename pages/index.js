@@ -2,21 +2,7 @@ import Head from "next/head";
 import path from "path";
 
 import LinkList from "../components/linkList";
-
-import { tree, tree2list } from '../util/tree'
-
-export async function getStaticProps() {
-	const posts = tree2list(
-		await tree('content', {
-			extensions: [".md"],
-			includeDir: true,
-		}),
-		{
-			sliceHead: 1,
-		}
-	);
-	return { props: { posts } };
-}
+import { tree, tree2list } from "../util/tree";
 
 export default function Home({ posts }) {
 	return (
@@ -29,4 +15,17 @@ export default function Home({ posts }) {
 			<LinkList list={posts} />
 		</>
 	);
+}
+
+export async function getStaticProps() {
+	const posts = tree2list(
+		await tree("content", {
+			extensions: [".md"],
+			includeDir: true,
+		}),
+		{
+			sliceHead: 1,
+		}
+	);
+	return { props: { posts } };
 }

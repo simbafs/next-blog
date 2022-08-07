@@ -1,20 +1,24 @@
-import Post from "../components/post";
-import LinkList from "../components/linkList";
-
-import { useRouter } from "next/router";
-
+import Head from "next/head";
 import fs from "fs/promises";
-import { tree, tree2list } from "../util/tree";
 import { join } from "path";
 
+import Post from "../components/post";
+import LinkList from "../components/linkList";
+import { tree, tree2list } from "../util/tree";
+
 export default function Content({ file, dirs }) {
-	const router = useRouter();
-	const { post } = router.query;
-	if (file) {
-		return <Post title={file.title} content={file.content} />;
-	} else if (dirs) {
-		return <LinkList list={dirs} />;
-	}
+	return (
+		<>
+			<Head>
+				<title>{file?.title || "dir"}</title>
+			</Head>
+			{file ? (
+				<Post title={file.title} content={file.content} />
+			) : (
+				<LinkList list={dirs} />
+			)}
+		</>
+	);
 }
 
 export async function getStaticProps({ params }) {
@@ -32,26 +36,18 @@ export async function getStaticProps({ params }) {
 		};
 	} else {
 		const dirs = tree2list(
-			await tree(postPath, {
-				extensions: [".md"],
-				includeDir: true,
-			}),
-			{
-				sliceHead: 7,
-			}
+			await tree(postPath, { extensions: [".md"], includeDir: true }),
+			{ sliceHead: 7 }
 		);
 
 		return {
-			props: {
-				dirs: dirs,
-			},
+			props: { dirs: dirs },
 		};
 	}
 }
 
 export async function getStaticPaths() {
-	// console.log({ tree, tree2list })
-	const paths = tree2list(await tree(`./content`, { extensions: [".md"] }), {
+	const paths = tree2list(await tree(`content`, { extensions: [".md"] }), {
 		sliceHead: 1,
 		includeDir: true,
 	}).map((i) => ({
