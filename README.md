@@ -1,2 +1,3 @@
 # next-blog
-MD blog driven in nextjs 
+
+MD blog driven in nextjs

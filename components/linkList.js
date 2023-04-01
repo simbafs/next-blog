@@ -1,9 +1,9 @@
-import Link from "next/link";
+import Link from 'next/link'
 
 export default function LinkList({ list }) {
 	return (
 		<ul>
-			{list.map((i) => (
+			{list.map(i => (
 				<li key={i}>
 					<Link href={i}>
 						<a>{i}</a>
@@ -11,5 +11,5 @@ export default function LinkList({ list }) {
 				</li>
 			))}
 		</ul>
-	);
+	)
 }

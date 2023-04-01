@@ -1,6 +1,6 @@
-import fs from "fs/promises";
-import { join, sep } from "path";
-import {argv0} from "process";
+import fs from 'fs/promises'
+import { join, sep } from 'path'
+import { argv0 } from 'process'
 
 /** @typedef {Object} Node
  *  @property {string} name
@@ -15,34 +15,37 @@ import {argv0} from "process";
  *  @returns {Node}
  */
 async function tree(root, opt) {
-	root = join(root);
-	const item = await fs.readdir(root);
+	root = join(root)
+	const item = await fs.readdir(root)
 	const nodes = (
 		await Promise.all(
-			item.map(async (name) => {
-				const path = join(root, name);
-				const stat = await fs.stat(path);
+			item.map(async name => {
+				const path = join(root, name)
+				const stat = await fs.stat(path)
 				if (stat.isDirectory()) {
-					return tree(path, opt);
+					return tree(path, opt)
 				}
-				if (opt.extensions && !opt.extensions.some((i) => name.endsWith(i))) {
-					return;
+				if (
+					opt.extensions &&
+					!opt.extensions.some(i => name.endsWith(i))
+				) {
+					return
 				}
 				return {
 					name,
 					path,
-					type: "file",
+					type: 'file',
 					children: null,
-				};
+				}
 			})
 		)
-	).filter((i) => i);
+	).filter(i => i)
 	return {
 		name: root,
 		path: root,
-		type: "directory",
+		type: 'directory',
 		children: nodes,
-	};
+	}
 }
 
 /** @param {Node} tree
@@ -54,27 +57,30 @@ async function tree(root, opt) {
  */
 function tree2list(tree, opt) {
 	function slice(path) {
-		const fragments = path.split(sep);
+		const fragments = path.split(sep)
 		return fragments
-			.slice(opt?.sliceHead || 0, fragments.length - (opt?.sliceTail || 0))
-			.join(sep);
+			.slice(
+				opt?.sliceHead || 0,
+				fragments.length - (opt?.sliceTail || 0)
+			)
+			.join(sep)
 	}
 	// console.log("tree2list opt", opt);
 	// console.log(tree)
-	let list = [];
-	tree?.children.forEach((node) => {
-		if (node.type === "directory") {
+	let list = []
+	tree?.children.forEach(node => {
+		if (node.type === 'directory') {
 			if (opt?.includeDir) {
 				// console.log(`add ${node.path} to list`);
-				list.push(slice(node.path));
+				list.push(slice(node.path))
 			}
-			list = list.concat(tree2list(node, opt));
+			list = list.concat(tree2list(node, opt))
 		} else {
-			const fragments = node.path.split(sep);
-			list.push(slice(node.path));
+			const fragments = node.path.split(sep)
+			list.push(slice(node.path))
 		}
-	});
-	return list;
+	})
+	return list
 }
 
-export { tree, tree2list };
+export { tree, tree2list }

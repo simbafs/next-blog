@@ -1,10 +1,10 @@
 import { tree as Tree, tree2list as Tree2list } from './tree'
 
-export async function tree(root, opt){
+export async function tree(root, opt) {
 	return await Tree(root, opt)
 }
 
-export function tree2list(tree, opt){
+export function tree2list(tree, opt) {
 	return Tree2list(tree, opt)
 }
 
