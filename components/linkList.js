@@ -5,9 +5,7 @@ export default function LinkList({ list }) {
 		<ul>
 			{list.map(i => (
 				<li key={i}>
-					<Link href={i}>
-						<a>{i}</a>
-					</Link>
+					<Link href={i}>{i}</Link>
 				</li>
 			))}
 		</ul>
