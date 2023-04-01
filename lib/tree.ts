@@ -1,62 +1,60 @@
 import fs from 'fs/promises'
 import { join, sep } from 'path'
-import { argv0 } from 'process'
 
-/** @typedef {Object} Node
- *  @property {string} name
- *  @property {string} path
- *  @property {('file'|'directory')} type
- *  @property {Node} [child]
- */
+type Node = {
+	name: string
+	path: string
+	type: 'file' | 'directory' | 'null'
+	children?: Node[]
+}
 
-/** @param {string} root
- *  @param {Object} [opt]
- *  @param {string[]} [opt.extensions]
- *  @returns {Node}
- */
-async function tree(root, opt) {
+type OptTree = {
+	extensions: string[]
+}
+async function tree(root: string, opt: OptTree) {
 	root = join(root)
 	const item = await fs.readdir(root)
-	const nodes = (
+	const nodes: Node[] = (
 		await Promise.all(
 			item.map(async name => {
 				const path = join(root, name)
 				const stat = await fs.stat(path)
 				if (stat.isDirectory()) {
-					return tree(path, opt)
+					return await tree(path, opt)
 				}
 				if (
 					opt.extensions &&
 					!opt.extensions.some(i => name.endsWith(i))
 				) {
-					return
+					return {
+						name: '',
+						path: '',
+						type: 'null',
+					} as const
 				}
 				return {
 					name,
 					path,
 					type: 'file',
-					children: null,
-				}
+				} as const
 			})
 		)
-	).filter(i => i)
+	).filter(i => i.type != 'null')
 	return {
 		name: root,
 		path: root,
 		type: 'directory',
 		children: nodes,
-	}
+	} as Node
 }
 
-/** @param {Node} tree
- *  @param {Object} [opt]
- *  @param {bool} [opt.includeDir]
- *  @param {number} [opt.sliceHead]
- *  @param {number} [opt.sliceTail]
- *  @returns {string[]}
- */
-function tree2list(tree, opt) {
-	function slice(path) {
+type OptTree2List = {
+	includeDir: boolean
+	sliceHead: number
+	sliceTail: number
+}
+function tree2list(tree: Node, opt: OptTree2List) {
+	function slice(path: string) {
 		const fragments = path.split(sep)
 		return fragments
 			.slice(
@@ -65,18 +63,14 @@ function tree2list(tree, opt) {
 			)
 			.join(sep)
 	}
-	// console.log("tree2list opt", opt);
-	// console.log(tree)
-	let list = []
-	tree?.children.forEach(node => {
+	let list: string[] = []
+	tree?.children?.forEach(node => {
 		if (node.type === 'directory') {
 			if (opt?.includeDir) {
-				// console.log(`add ${node.path} to list`);
 				list.push(slice(node.path))
 			}
 			list = list.concat(tree2list(node, opt))
 		} else {
-			const fragments = node.path.split(sep)
 			list.push(slice(node.path))
 		}
 	})

@@ -2,9 +2,9 @@ import Head from 'next/head'
 import fs from 'fs/promises'
 import { join } from 'path'
 
-import Post from '../components/post'
-import LinkList from '../components/linkList'
-import { tree, tree2list } from '../util/tree'
+import Post from '@/components/post'
+import LinkList from '@/components/linkList'
+import { tree, tree2list } from '@/lib/tree'
 
 export default function Content({ file, dirs }) {
 	return (

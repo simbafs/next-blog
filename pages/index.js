@@ -1,8 +1,8 @@
 import Head from 'next/head'
 import path from 'path'
 
-import LinkList from '../components/linkList'
-import { tree, tree2list } from '../util/tree'
+import LinkList from '@/components/linkList'
+import { tree, tree2list } from '@/lib/tree'
 
 export default function Home({ posts }) {
 	return (
