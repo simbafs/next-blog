@@ -36,7 +36,10 @@ export async function getStaticProps({ params }) {
 		}
 	} else {
 		const dirs = tree2list(
-			await tree(postPath, { extensions: ['.md'], includeDir: true }),
+			await tree(postPath, {
+				extensions: ['.md'],
+				expandDir: true
+			}),
 			{ sliceHead: 7 }
 		)
 
@@ -49,6 +52,7 @@ export async function getStaticProps({ params }) {
 export async function getStaticPaths() {
 	const paths = tree2list(await tree(`content`, { extensions: ['.md'] }), {
 		sliceHead: 1,
+		expandDir: true,
 		includeDir: true,
 	}).map(i => ({
 		params: { post: i.split('/') },

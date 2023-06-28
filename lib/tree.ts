@@ -49,9 +49,10 @@ async function tree(root: string, opt: OptTree) {
 }
 
 type OptTree2List = {
-	includeDir: boolean
-	sliceHead: number
-	sliceTail: number
+	expandDir?: boolean
+	includeDir?: boolean
+	sliceHead?: number
+	sliceTail?: number
 }
 function tree2list(tree: Node, opt: OptTree2List) {
 	function slice(path: string) {
@@ -66,10 +67,14 @@ function tree2list(tree: Node, opt: OptTree2List) {
 	let list: string[] = []
 	tree?.children?.forEach(node => {
 		if (node.type === 'directory') {
-			if (opt?.includeDir) {
-				list.push(slice(node.path))
+			if (opt?.expandDir) {
+				list = list.concat(tree2list(node, opt))
+				if (opt?.includeDir) {
+					list.push(slice(node.path) + '/')
+				}
+			} else {
+				list.push(slice(node.path) + '/')
 			}
-			list = list.concat(tree2list(node, opt))
 		} else {
 			list.push(slice(node.path))
 		}
