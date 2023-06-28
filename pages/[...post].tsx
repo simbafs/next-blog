@@ -6,7 +6,13 @@ import Post from '@/components/post'
 import LinkList from '@/components/linkList'
 import { tree, tree2list } from '@/lib/tree'
 
-export default function Content({ file, dirs }) {
+export default function Content({ file, dirs }: {
+	file?: {
+		title: string,
+		content: string
+	},
+	dirs?: string[],
+}) {
 	return (
 		<>
 			<Head>
@@ -15,13 +21,15 @@ export default function Content({ file, dirs }) {
 			{file ? (
 				<Post title={file.title} content={file.content} />
 			) : (
-				<LinkList list={dirs} />
+				<LinkList list={dirs || []} />
 			)}
 		</>
 	)
 }
 
-export async function getStaticProps({ params }) {
+export async function getStaticProps({ params }: {
+	params: { post: string[] }
+}) {
 	const fileName = join(...params.post)
 	const postPath = join(process.cwd(), 'content', fileName)
 	if ((await fs.stat(postPath)).isFile()) {
@@ -36,10 +44,7 @@ export async function getStaticProps({ params }) {
 		}
 	} else {
 		const dirs = tree2list(
-			await tree(postPath, {
-				extensions: ['.md'],
-				expandDir: true
-			}),
+			await tree(postPath, { extensions: ['.md'] }),
 			{ sliceHead: 7 }
 		)
 

@@ -3,7 +3,9 @@ import Head from 'next/head'
 import LinkList from '@/components/linkList'
 import { tree, tree2list } from '@/lib/tree'
 
-export default function Home({ posts }) {
+export default function Home({ posts }: {
+	posts: string[]
+}) {
 	return (
 		<>
 			<Head>
@@ -18,10 +20,7 @@ export default function Home({ posts }) {
 
 export async function getStaticProps() {
 	const posts = tree2list(
-		await tree('content', {
-			extensions: ['.md'],
-			includeDir: true,
-		}),
+		await tree('content', { extensions: ['.md'] }),
 		{
 			sliceHead: 1,
 			expandDir: false,
