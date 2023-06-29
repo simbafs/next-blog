@@ -1,10 +1,13 @@
-import Head from 'next/head'
+import { useRouter } from 'next/router'
 import fs from 'fs/promises'
 import { join } from 'path'
 
 import Post from '@/components/post'
-import LinkList from '@/components/linkList'
+import LinkArray from '@/components/LinkArray'
+import PS1 from '@/components/terminal/PS1'
+import Terminal from '@/components/terminal'
 import { tree, tree2list } from '@/lib/tree'
+import TerminalLayout from '@/layouts/terminal'
 
 export default function Content({ file, dirs }: {
 	file?: {
@@ -13,17 +16,18 @@ export default function Content({ file, dirs }: {
 	},
 	dirs?: string[],
 }) {
+	const router = useRouter()
+	const cwd = router.asPath.slice(1) + '/'
 	return (
-		<>
-			<Head>
-				<title>{file?.title || 'dir'}</title>
-			</Head>
-			{file ? (
-				<Post title={file.title} content={file.content} />
-			) : (
-				<LinkList list={dirs || []} />
-			)}
-		</>
+		<TerminalLayout title={file?.title || 'dir'} description='file'>
+			<PS1 cmd={['open', router.asPath]} />
+			{file && <Post title={file.title} content={file.content} />}
+			{dirs && <LinkArray list={dirs.map(dir => ({
+				href: dir,
+				text: dir.replace(cwd, ''),
+			}))} />}
+			<Terminal />
+		</TerminalLayout>
 	)
 }
 
