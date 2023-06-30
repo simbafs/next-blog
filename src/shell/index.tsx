@@ -27,7 +27,7 @@ type Props = {
 function ClickCmd({ cmd, terminal }: { cmd: string[], terminal: Terminal }) {
 	return <a
 		className="underline hover:underline-offset-1"
-		href="javascript:void(0)"
+		href="#"
 		onClick={() => terminal.updateHistory({ next: [cmd] })}
 	> {cmd.join(' ')}</a>
 }
@@ -56,6 +56,7 @@ const cmds: { [cmd: string]: (prop: Props) => React.JSX.Element } = {
 	cd: Cd,
 	reboot: Reboot,
 	commandNotFound: CommandNotFound,
+	banner404: Banner404,
 }
 
 export const cmdList = Object.keys(cmds)
@@ -68,18 +69,19 @@ function Reboot() {
 	return <></>
 }
 
-function Cd({ args }: Props) {
+function Cd({ args, terminal }: Props) {
 	const router = useRouter()
-	useEffect(() => {
-		if (args.length === 1) {
-			router.push('/')
-		} else if (args[1][0] === '/') {
-			router.push(args[1])
-		} else {
-			router.push(router.asPath + '/' + (args[1] || '/'))
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [])
+	terminal.updateHistory({ clear: true })
+	if (!args[1]) {
+		console.log('1. cd /')
+		router.push('/')
+	} else if (args[1][0] === '/') {
+		console.log('2. cd ' + args[1])
+		router.push(args[1])
+	} else {
+		console.log('3. cd ' + args[1])
+		router.push(router.asPath + '/' + (args[1] || '/'))
+	}
 	return <></>
 }
 
@@ -113,15 +115,42 @@ function Help({ terminal }: Props) {
 	return <p>Available commands: {insertBetween(cmdList.map((cmd, index) => <ClickCmd key={index} cmd={[cmd]} terminal={terminal} />), ', ')}</p >
 }
 
-function Banner({ terminal }: Props) {
+function Banner404() {
 	return <>
 		<div className="overflow-scroll break-keep">
-			<p>╱╭━━━╮╱╱╭━━╮╱╱╭━╮╭━╮╱╱╭━━╮╱╱╱╭━━━╮╱╱╭━━━╮╱╱╭━━━╮╱╱╱╱╱╱╭━━━╮╱╱╭━━━╮╱</p>
-			<p>╱┃╭━╮┃╱╱╰┫┣╯╱╱┃┃╰╯┃┃╱╱┃╭╮┃╱╱╱┃╭━╮┃╱╱┃╭━━╯╱╱┃╭━╮┃╱╱╱╱╱╱┃╭━╮┃╱╱┃╭━╮┃╱</p>
-			<p>╱┃╰━━╮╱╱╱┃┃╱╱╱┃╭╮╭╮┃╱╱┃╰╯╰╮╱╱┃┃╱┃┃╱╱┃╰━━╮╱╱┃╰━━╮╱╱╱╱╱╱┃┃╱╰╯╱╱┃┃╱╰╯╱</p>
-			<p>╱╰━━╮┃╱╱╱┃┃╱╱╱┃┃┃┃┃┃╱╱┃╭━╮┃╱╱┃╰━╯┃╱╱┃╭━━╯╱╱╰━━╮┃╱╱╱╱╱╱┃┃╱╭╮╱╱┃┃╱╭╮╱</p>
-			<p>╱┃╰━╯┃╱╱╭┫┣╮╱╱┃┃┃┃┃┃╱╱┃╰━╯┃╱╱┃╭━╮┃╱╱┃┃╱╱╱╱╱┃╰━╯┃╱╱╭╮╱╱┃╰━╯┃╱╱┃╰━╯┃╱</p>
-			<p>╱╰━━━╯╱╱╰━━╯╱╱╰╯╰╯╰╯╱╱╰━━━╯╱╱╰╯╱╰╯╱╱╰╯╱╱╱╱╱╰━━━╯╱╱╰╯╱╱╰━━━╯╱╱╰━━━╯╱</p>
+			<pre>██╗  ██╗  ██████╗  ██╗  ██╗</pre>
+			<pre>██║  ██║ ██╔═████╗ ██║  ██║</pre>
+			<pre>███████║ ██║██╔██║ ███████║</pre>
+			<pre>╚════██║ ████╔╝██║ ╚════██║</pre>
+			<pre>     ██║ ╚██████╔╝      ██║</pre>
+			<pre>     ╚═╝  ╚═════╝       ╚═╝</pre>
+			<pre>██████╗   █████╗   ██████╗  ███████╗     ███╗   ██╗  ██████╗  ████████╗</pre>
+			<pre>██╔══██╗ ██╔══██╗ ██╔════╝  ██╔════╝     ████╗  ██║ ██╔═══██╗ ╚══██╔══╝</pre>
+			<pre>██████╔╝ ███████║ ██║  ███╗ █████╗       ██╔██╗ ██║ ██║   ██║    ██║   </pre>
+			<pre>██╔═══╝  ██╔══██║ ██║   ██║ ██╔══╝       ██║╚██╗██║ ██║   ██║    ██║   </pre>
+			<pre>██║      ██║  ██║ ╚██████╔╝ ███████╗     ██║ ╚████║ ╚██████╔╝    ██║   </pre>
+			<pre>╚═╝      ╚═╝  ╚═╝  ╚═════╝  ╚══════╝     ╚═╝  ╚═══╝  ╚═════╝     ╚═╝   </pre>
+			<pre>███████╗  ██████╗  ██╗   ██╗ ███╗   ██╗ ██████╗ </pre>
+			<pre>██╔════╝ ██╔═══██╗ ██║   ██║ ████╗  ██║ ██╔══██╗</pre>
+			<pre>█████╗   ██║   ██║ ██║   ██║ ██╔██╗ ██║ ██║  ██║</pre>
+			<pre>██╔══╝   ██║   ██║ ██║   ██║ ██║╚██╗██║ ██║  ██║</pre>
+			<pre>██║      ╚██████╔╝ ╚██████╔╝ ██║ ╚████║ ██████╔╝</pre>
+			<pre>╚═╝       ╚═════╝   ╚═════╝  ╚═╝  ╚═══╝ ╚═════╝ </pre>
+		</div>
+	</>
+}
+
+function Banner({ terminal }: Props) {
+	// if (args[1] === '404') {
+	// }
+	return <>
+		<div className="overflow-scroll break-keep">
+			<pre>╱╭━━━╮╱╱╭━━╮╱╱╭━╮╭━╮╱╱╭━━╮╱╱╱╭━━━╮╱╱╭━━━╮╱╱╭━━━╮╱╱╱╱╱╱╭━━━╮╱╱╭━━━╮╱</pre>
+			<pre>╱┃╭━╮┃╱╱╰┫┣╯╱╱┃┃╰╯┃┃╱╱┃╭╮┃╱╱╱┃╭━╮┃╱╱┃╭━━╯╱╱┃╭━╮┃╱╱╱╱╱╱┃╭━╮┃╱╱┃╭━╮┃╱</pre>
+			<pre>╱┃╰━━╮╱╱╱┃┃╱╱╱┃╭╮╭╮┃╱╱┃╰╯╰╮╱╱┃┃╱┃┃╱╱┃╰━━╮╱╱┃╰━━╮╱╱╱╱╱╱┃┃╱╰╯╱╱┃┃╱╰╯╱</pre>
+			<pre>╱╰━━╮┃╱╱╱┃┃╱╱╱┃┃┃┃┃┃╱╱┃╭━╮┃╱╱┃╰━╯┃╱╱┃╭━━╯╱╱╰━━╮┃╱╱╱╱╱╱┃┃╱╭╮╱╱┃┃╱╭╮╱</pre>
+			<pre>╱┃╰━╯┃╱╱╭┫┣╮╱╱┃┃┃┃┃┃╱╱┃╰━╯┃╱╱┃╭━╮┃╱╱┃┃╱╱╱╱╱┃╰━╯┃╱╱╭╮╱╱┃╰━╯┃╱╱┃╰━╯┃╱</pre>
+			<pre>╱╰━━━╯╱╱╰━━╯╱╱╰╯╰╯╰╯╱╱╰━━━╯╱╱╰╯╱╰╯╱╱╰╯╱╱╱╱╱╰━━━╯╱╱╰╯╱╱╰━━━╯╱╱╰━━━╯╱</pre>
 		</div>
 		<p># Social</p>
 		<p>• <Link href="https://github.com/simbafs" target="_blank" className="underline hover:underline-offset-1">GitHub</Link></p>

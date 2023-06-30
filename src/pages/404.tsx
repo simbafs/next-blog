@@ -1,5 +1,8 @@
+import TerminalLayout from "@/layouts/terminal"
+import Terminal from "@/components/terminal"
+
 export default function NotFound() {
-	return <div>
-		<h1>404</h1>
-	</div>
+	return <TerminalLayout title="404" description="Page Not Found">
+		<Terminal initCmd={[['banner404']]} />
+	</TerminalLayout>
 }
