@@ -1,13 +1,17 @@
+import Head from "next/head"
+import { useEffect } from "react"
+
 export interface Props {
 	title: string
 	description: string
 	// image?: string
 }
 
-export default function BaseHead({ title, description/*, image = '/placeholder-social.jpg'*/ }: Props) {
+export default function BaseHead({ title, description }: Props) {
+	// export default function BaseHead({ title, description/*, image = '/placeholder-social.jpg'*/ }: Props) {
 	// TODO
 	// const canonicalURL = new URL(Astro.url.pathname, Astro.site)
-	return <>
+	return <Head>
 		{/* Global Metadata */}
 		<meta charSet="utf-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -34,5 +38,5 @@ export default function BaseHead({ title, description/*, image = '/placeholder-s
 		<meta property="twitter:title" content={title} />
 		<meta property="twitter:description" content={description} />
 		{/* <meta property="twitter:image" content={new URL(image, Astro.url)} /> */}
-	</>
+	</Head>
 }

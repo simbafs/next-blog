@@ -1,16 +1,14 @@
 import React from 'react'
-import Head from 'next/head'
-import BaseHead from '../components/BaseHead'
-import NavLink from '../components/NavLink'
+import BaseHead from '@/components/BaseHead'
+import NavLink from '@/components/NavLink'
+
 
 export default function TerminalLayout({ title, description, children }: React.PropsWithChildren<{
     title: string
     description: string
 }>) {
     return <>
-        <Head>
-            <BaseHead title={title} description={description} />
-        </Head>
+        <BaseHead title={title} description={description} />
         <div className="m-0 h-screen w-screen bg-base03 p-4 leading-5 text-base3">
             <div className="flex h-full w-full flex-col rounded-lg border-2 border-solid border-base2">
                 <div className="flex flex-wrap border-b-2 px-2 py-3">
