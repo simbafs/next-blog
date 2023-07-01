@@ -2,26 +2,24 @@ import { useRouter } from 'next/router'
 import fs from 'fs/promises'
 import { join } from 'path'
 
-import Post from '@/components/post'
+import Post, { File } from '@/components/post'
 import LinkArray from '@/components/LinkArray'
 import PS1 from '@/components/terminal/PS1'
 import Terminal from '@/components/terminal'
 import { tree, tree2list } from '@/lib/tree'
 import TerminalLayout from '@/layouts/terminal'
+import md2html from '@/lib/md2html'
 
 export default function Content({ file, dirs }: {
-	file?: {
-		title: string,
-		content: string
-	},
-	dirs?: string[],
+	file?: File
+	dirs?: string[]
 }) {
 	const router = useRouter()
 	const cwd = router.asPath.slice(1) + '/'
 	return (
-		<TerminalLayout title={file?.title || 'dir'} description='file'>
+		<TerminalLayout title={file?.filename || 'dir'} description='file'>
 			<PS1 cmd={['open', router.asPath]} />
-			{file && <Post title={file.title} content={file.content} />}
+			{file && <Post file={file} />}
 			{dirs && <LinkArray list={dirs.map(dir => ({
 				href: dir,
 				text: dir.replace(cwd, ''),
@@ -34,16 +32,20 @@ export default function Content({ file, dirs }: {
 export async function getStaticProps({ params }: {
 	params: { post: string[] }
 }) {
-	const fileName = join(...params.post)
-	const postPath = join(process.cwd(), 'content', fileName)
+	const filename = join(...params.post)
+	const postPath = join(process.cwd(), 'content', filename)
 	if ((await fs.stat(postPath)).isFile()) {
-		const files = (await fs.readFile(postPath)).toString()
+		const content = (await fs.readFile(postPath)).toString()
+		const { contentHTML, matter } = await md2html(content)
+
 		return {
 			props: {
 				file: {
-					title: fileName,
-					content: files,
-				},
+					filename,
+					content,
+					contentHTML,
+					matter,
+				} as File,
 			},
 		}
 	} else {
