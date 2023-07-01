@@ -5,21 +5,21 @@
 
 import { useRouter } from "next/router"
 import Link from "next/link"
-import React, { useEffect } from "react"
+import React from "react"
+import LinkArray from "@/components/LinkArray"
 
-type Terminal = {
+export type Terminal = {
 	history: string[][]
 	updateHistory: React.Dispatch<{
 		clear?: boolean
 		next?: string[][]
 	}>
-	files?: any[]
+	data?: any
 }
 
 type Props = {
 	args: string[]
 	terminal: Terminal
-	data?: any
 }
 
 // helpers
@@ -36,7 +36,7 @@ function insertBetween(arr: any, between: any): any[] {
 	return arr.reduce((acc: any, curr: any) => [...acc, between, curr], []).slice(1)
 }
 
-export default function Shell({ args, terminal, data }: Props) {
+export default function Shell({ args, terminal }: Props) {
 	const cmd = cmds[args[0]]
 	if (!cmd) {
 		return cmds['commandNotFound']({
@@ -44,7 +44,7 @@ export default function Shell({ args, terminal, data }: Props) {
 			terminal,
 		})
 	}
-	return cmd({ args, terminal, data })
+	return cmd({ args, terminal })
 }
 
 const cmds: { [cmd: string]: (prop: Props) => React.JSX.Element } = {
@@ -55,6 +55,7 @@ const cmds: { [cmd: string]: (prop: Props) => React.JSX.Element } = {
 	ls: Ls,
 	cd: Cd,
 	reboot: Reboot,
+	open: Open,
 	commandNotFound: CommandNotFound,
 	banner404: Banner404,
 }
@@ -62,6 +63,15 @@ const cmds: { [cmd: string]: (prop: Props) => React.JSX.Element } = {
 export const cmdList = Object.keys(cmds)
 
 // cmds
+
+function Open({ terminal }: Props) {
+	if (Array.isArray(terminal.data)) {
+		return <LinkArray list={terminal.data} />
+	}
+	return <div
+		className="prose lg:prose-xl hover:prose-a:underline-offset-1 max-w-none"
+		dangerouslySetInnerHTML={{ __html: terminal.data }} />
+}
 
 function Reboot() {
 	const router = useRouter()
@@ -88,21 +98,23 @@ function Cd({ args, terminal }: Props) {
 // ls('.', data)
 function Ls({ /*args,*/ terminal }: Props) {
 	// TODO base
-	const files = terminal?.files || []
 	const formatedDate = (date: Date) => `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
-	return <ul>
-		{files.map((file, index) => <li key={index}>• <span>{formatedDate(file.data.pubDate)}</span> <a className="underline hover:underline-offset-1" href={`/newBlog/post/${file.slug}`}>{file.data.title}</a></li>)}
-	</ul>
+	if (Array.isArray(terminal.data)) {
+		return <ul>
+			{terminal.data.map((file, index) => <li key={index}>• <span>{formatedDate(file.data.pubDate)}</span> <a className="underline hover:underline-offset-1" href={`/newBlog/post/${file.slug}`}>{file.data.title}</a></li>)}
+		</ul>
+	}
+	return <></>
 }
 
 function CommandNotFound({ args }: Props) {
 	return <p>command not found: {args[1]}</p>
 }
 
-function Echo({ args, data }: Props) {
+function Echo({ args/*, termianl*/ }: Props) {
 	return <>
 		<p>{args.slice(1).join(' ')}</p>
-		{data && <pre className="overflow-scroll">{JSON.stringify(data, null, 2)}</pre>}
+		{/* {data && <pre className="overflow-scroll">{JSON.stringify(data, null, 2)}</pre>} */}
 	</>
 }
 
@@ -141,8 +153,6 @@ function Banner404() {
 }
 
 function Banner({ terminal }: Props) {
-	// if (args[1] === '404') {
-	// }
 	return <>
 		<div className="overflow-scroll break-keep">
 			<pre>╱╭━━━╮╱╱╭━━╮╱╱╭━╮╭━╮╱╱╭━━╮╱╱╱╭━━━╮╱╱╭━━━╮╱╱╭━━━╮╱╱╱╱╱╱╭━━━╮╱╱╭━━━╮╱</pre>

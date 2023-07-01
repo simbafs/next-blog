@@ -2,9 +2,7 @@ import { useRouter } from 'next/router'
 import fs from 'fs/promises'
 import { join } from 'path'
 
-import Post, { File } from '@/components/post'
-import LinkArray from '@/components/LinkArray'
-import PS1 from '@/components/terminal/PS1'
+import { File } from '@/components/post'
 import Terminal from '@/components/terminal'
 import { tree, tree2list } from '@/lib/tree'
 import TerminalLayout from '@/layouts/terminal'
@@ -16,17 +14,19 @@ export default function Content({ file, dirs }: {
 }) {
 	const router = useRouter()
 	const cwd = router.asPath.slice(1) + '/'
-	return (
-		<TerminalLayout title={file?.filename || 'dir'} description='file'>
-			<PS1 cmd={['open', router.asPath]} />
-			{file && <Post file={file} />}
-			{dirs && <LinkArray list={dirs.map(dir => ({
-				href: dir,
-				text: dir.replace(cwd, ''),
-			}))} />}
-			<Terminal />
+	if (file) {
+		return <TerminalLayout title={`open ${file.filename}`} description='file'>
+			<Terminal initCmd={[['open', file.filename]]} data={[file.contentHTML]} />
 		</TerminalLayout>
-	)
+	}
+	if (dirs) {
+		return <TerminalLayout title={`open ${cwd}`} description='dir'>
+			<Terminal initCmd={[['open', cwd]]} data={[dirs]} />
+		</TerminalLayout>
+	}
+	return <TerminalLayout title="404" description='404'>
+		<Terminal />
+	</TerminalLayout>
 }
 
 export async function getStaticProps({ params }: {

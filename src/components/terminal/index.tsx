@@ -2,10 +2,9 @@ import { useReducer } from 'react'
 import PS1 from './PS1'
 import Exec from './Exec'
 
-export default function Terminal({ initCmd, files }: {
+export default function Terminal({ initCmd, data }: {
 	initCmd?: string[][]
-	// files?: CollectionEntry<'blog'>[]
-	files?: any[]
+	data?: any[]
 }) {
 	const [history, updateHistory] = useReducer(
 		(prev: string[][], action: {
@@ -27,7 +26,7 @@ export default function Terminal({ initCmd, files }: {
 				<Exec args={cmd} terminal={{
 					history,
 					updateHistory,
-					files: files || [],
+					data: data?.[index],
 				}} />
 			</div>
 		))}

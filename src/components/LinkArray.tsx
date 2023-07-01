@@ -11,10 +11,10 @@ export default function LinkArray({ list }: {
 			{list.map(item => (
 				typeof item === 'string'
 					? <li key={item}>
-						<Link href={item}>{item}</Link>
+						<Link className="underline hover:underline-offset-1" href={item}>{item}</Link>
 					</li>
 					: <li key={item.href}>
-						<Link href={item.href}>{item.text}</Link>
+						<Link className="underline hover:underline-offset-1" href={item.href}>{item.text}</Link>
 					</li>
 			))}
 		</ul>

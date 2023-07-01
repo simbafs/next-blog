@@ -1,22 +1,11 @@
-import Shell from '../../shell'
-// import { CollectionEntry } from 'astro:content'
+import Shell, { Terminal } from '@/shell'
 
-export default function Exec({ args, terminal, data }: {
+export default function Exec({ args, terminal }: {
 	args: string[]
-	terminal: {
-		history: string[][]
-		updateHistory: React.Dispatch<{
-			clear?: boolean
-			next?: string[][]
-		}>
-		// files?: CollectionEntry<'blog'>[]
-		files: any[]
-	}
-	data?: any
+	terminal: Terminal
 }) {
 	return <Shell
 		args={args}
 		terminal={terminal}
-		data={data}
 	/>
 }

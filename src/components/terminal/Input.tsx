@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { cmdList } from '../../shell/index'
+import { cmdList } from '@/shell/index'
 
 export default function Input({
 	updateHistory,
