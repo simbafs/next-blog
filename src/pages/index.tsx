@@ -9,7 +9,7 @@ export default function Home({ indexHTML }: {
 }) {
 	return (
 		<TerminalLayout title="Home" description="Home">
-			<Terminal initCmd={[['banner'], ['open', 'index.md']]} data={[, indexHTML]} />
+			<Terminal initCmd={['banner', 'open index.md']} stdin={[, indexHTML]} />
 		</TerminalLayout>
 	)
 }

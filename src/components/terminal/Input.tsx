@@ -1,15 +1,15 @@
 import React, { useState } from 'react'
-import { cmdList } from '@/shell/index'
+import { HistoryObj, cmdList } from '@/shell/index'
 
 export default function Input({
-	updateHistory,
+	cmdIndex,
+	historyObj,
 }: {
-	updateHistory: React.Dispatch<{
-		clear?: boolean
-		next?: string[][]
-	}>
+	cmdIndex?: number
+	historyObj: HistoryObj
 }) {
 	const [value, setValue] = useState('')
+
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setValue(e.target.value)
@@ -17,15 +17,22 @@ export default function Input({
 
 	const handleEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (e.key !== 'Enter') return
-		updateHistory({
-			next: [value.split(' ')],
+		historyObj.update({
+			next: [value],
 		})
 		setValue('')
 	}
 
+	if (cmdIndex !== undefined) {
+		return <div className="flex">
+			<span className="text-cyan whitespace-nowrap">$&nbsp;</span>
+			<span className="">{historyObj.history[cmdIndex]}</span>
+		</div>
+	}
+
 	return (
-		<>
-			<label className='hidden'>command line: </label>
+		<div className="flex">
+			<span className="text-cyan whitespace-nowrap">$&nbsp;</span>
 			<input
 				type="text"
 				className={`bg-base03 border-none outline-none flex-grow ${cmdList.includes(value.split(' ')[0]) || value.length === 0 ? 'text-green' : 'text-red'}`}
@@ -37,6 +44,6 @@ export default function Input({
 				onChange={handleChange}
 				onKeyDown={handleEnter}
 			/>
-		</>
+		</div>
 	)
 }

@@ -16,12 +16,12 @@ export default function Content({ file, dirs }: {
 	const cwd = router.asPath.slice(1) + '/'
 	if (file) {
 		return <TerminalLayout title={`open ${file.filename}`} description='file'>
-			<Terminal initCmd={[['open', file.filename]]} data={[file.contentHTML]} />
+			<Terminal initCmd={[`open ${file.filename}`]} stdin={[file.contentHTML]} />
 		</TerminalLayout>
 	}
 	if (dirs) {
 		return <TerminalLayout title={`open ${cwd}`} description='dir'>
-			<Terminal initCmd={[['open', cwd]]} data={[dirs]} />
+			<Terminal initCmd={[`open ${cwd}`]} stdin={[dirs]} />
 		</TerminalLayout>
 	}
 	return <TerminalLayout title="404" description='404'>

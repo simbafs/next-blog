@@ -1,36 +1,40 @@
 import { useReducer } from 'react'
-import PS1 from './PS1'
-import Exec from './Exec'
+import Cell from './Cell'
 
-export default function Terminal({ initCmd, data }: {
-	initCmd?: string[][]
-	data?: any[]
+export type History = string[]
+export type HistoryAction = {
+	clear?: boolean
+	next?: string[]
+}
+
+export default function Terminal({ initCmd, stdin }: {
+	initCmd?: History
+	stdin?: any[]
 }) {
 	const [history, updateHistory] = useReducer(
-		(prev: string[][], action: {
-			clear?: boolean,
-			next?: string[][],
-		}) => {
+		(prev: History, action: HistoryAction) => {
 			if (action.clear) return []
 			return [...prev, ...action?.next || []]
 		},
-		initCmd || [],
+		initCmd || []
 	)
 
 	return <>
-		{history.map((cmd, index) => (
-			<div key={index} style={{
-				wordBreak: 'break-all',
-			}}>
-				<PS1 cmd={cmd} />
-				<Exec args={cmd} terminal={{
-					history,
-					updateHistory,
-					data: data?.[index],
-				}} />
-			</div>
-		))}
-		<PS1 updateHistory={updateHistory} />
+		{history.map((_, index) => <Cell
+			key={index}
+			cmdIndex={index}
+			historyObj={{
+				history,
+				update: updateHistory,
+			}}
+			stdin={stdin?.[index]}
+		/>)}
+		<Cell
+			historyObj={{
+				history,
+				update: updateHistory,
+			}}
+		/>
 	</>
 
 }
