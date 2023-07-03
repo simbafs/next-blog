@@ -7,7 +7,6 @@ export type Cmd = {
 const conjection = ['|'] as const
 
 export default function parseCmd(cmd: string): Cmd {
-    console.log(cmd)
     const splitted = cmd.split(' ')
     const conjunctionIndex = splitted.findIndex((s) => conjection.includes(s as any))
 
