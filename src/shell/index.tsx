@@ -6,12 +6,12 @@
 import { useRouter } from "next/router"
 import Link from "next/link"
 import React from "react"
-import LinkArray from "@/components/LinkArray"
 
 import { History, HistoryAction } from '@/components/terminal'
 import parseCmd, { Cmd } from "./parseCmd"
 import { Node } from '@/lib/tree'
 import Post, { File } from "@/components/post"
+import { join } from 'path'
 
 export type HistoryObj = {
 	history: History
@@ -119,17 +119,30 @@ function Cd({ args, historyObj: history }: Props) {
 }
 
 // ls('.', data)
-function Ls({ /*args,*/ fs }: Props) {
+function Ls({ args, fs }: Props) {
+	const router = useRouter()
+
 	if (!fs) return <></>
-	return <pre>{JSON.stringify(fs, null, 2)}</pre>
-	// // TODO base
+
+	const destinationPath = join(fs.directory.path, args[1] || router.asPath.slice(1)).replace(/\/$/, '')
+
+	let current: Node | undefined = fs.directory
+
+	while (current && current.path !== destinationPath) {
+		current = current.children?.find(child => destinationPath.includes(child.path))
+	}
+
 	// const formatedDate = (date: Date) => `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
-	// if (Array.isArray(stdin)) {
-	// 	return <ul>
-	// 		{stdin.map((file, index) => <li key={index}>• <span>{formatedDate(file.data.pubDate)}</span> <a className="underline hover:underline-offset-1" href={`/newBlog/post/${file.slug}`}>{file.data.title}</a></li>)}
-	// 	</ul>
-	// }
-	// return <></>
+
+	return <ul>
+		{current?.children?.map((child, index) => <li key={index}>
+			<a
+				// TODO 
+				href={child.path.replace('content', '')}
+				className="underline hover:underline-offset-1"
+			>{child.name}</a>
+		</li>)}
+	</ul>
 }
 
 function CommandNotFound({ args }: Props) {

@@ -19,9 +19,14 @@ async function tree(root: string, opt: TreeOpt) {
 			item.map(async name => {
 				const path = join(root, name)
 				const stat = await fs.stat(path)
+				// directory
 				if (stat.isDirectory()) {
-					return await tree(path, opt)
+					// remove root from name
+					let dir = await tree(path, opt)
+					dir.name = dir.name.replace(join(root, '/'), '')
+					return dir
 				}
+				// exclude some files
 				if (
 					opt.extensions &&
 					!opt.extensions.some(i => name.endsWith(i))
@@ -30,13 +35,14 @@ async function tree(root: string, opt: TreeOpt) {
 						name: '',
 						path: '',
 						type: 'null',
-					} as const
+					} satisfies Node
 				}
+				// file
 				return {
 					name,
 					path,
 					type: 'file',
-				} as const
+				} satisfies Node
 			})
 		)
 	).filter(i => i.type != 'null')
