@@ -1,8 +1,9 @@
+import { FS } from '@/shell'
 import { useReducer } from 'react'
 import Cell from './Cell'
-import { FS } from '@/shell'
 
 export type History = string[]
+
 export type HistoryAction = {
 	clear?: boolean
 	next?: string[]

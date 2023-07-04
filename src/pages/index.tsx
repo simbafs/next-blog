@@ -1,10 +1,10 @@
-import fs from 'fs/promises'
 import Terminal from '@/components/terminal'
 import TerminalLayout from '@/layouts/terminal'
 import md2html from '@/lib/md2html'
-import path from 'path'
-import { FS } from '@/shell'
 import { tree } from '@/lib/tree'
+import { FS } from '@/shell'
+import fs from 'fs/promises'
+import path from 'path'
 
 export default function Home({ fs }: {
 	fs: FS

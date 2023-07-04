@@ -1,7 +1,6 @@
-import PS1 from './PS1'
+import Shell, { FS, HistoryObj } from '@/shell'
 import Input from './Input'
-import Shell, { FS } from '@/shell'
-import { HistoryObj } from '@/shell'
+import PS1 from './PS1'
 
 export default function Cell({ cmdIndex, historyObj, stdin, fs }: {
     cmdIndex?: number

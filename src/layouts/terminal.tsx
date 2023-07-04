@@ -1,6 +1,6 @@
-import React from 'react'
 import BaseHead from '@/components/BaseHead'
 import NavLink from '@/components/NavLink'
+import React from 'react'
 
 
 export default function TerminalLayout({ title, description, children }: React.PropsWithChildren<{
@@ -23,7 +23,6 @@ export default function TerminalLayout({ title, description, children }: React.P
                         </p>
                     </div>
                     <div className="flex flex-wrap items-center space-x-2">
-                        {/* TODO this shoud be done in NavLink  */}
                         <NavLink href="/">[H]ome</NavLink>
                         <NavLink href="/archive">[A]rchive</NavLink>
                         <NavLink href="/search">[S]earch</NavLink>

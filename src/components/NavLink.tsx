@@ -1,6 +1,6 @@
-import React, { AnchorHTMLAttributes } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import React, { AnchorHTMLAttributes } from 'react'
 
 export default function NavLink({ href, children, /*...props*/ }: React.PropsWithChildren<AnchorHTMLAttributes<HTMLAnchorElement>>) {
     const router = useRouter()

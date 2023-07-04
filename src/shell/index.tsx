@@ -3,15 +3,14 @@
 // or this https://stackoverflow.com/questions/44987464/import-all-modules-from-a-directory-at-once-node
 // or this https://stackoverflow.com/questions/5364928/node-js-require-all-files-in-a-folder
 
-import { useRouter } from "next/router"
-import Link from "next/link"
-import React from "react"
-
-import { History, HistoryAction } from '@/components/terminal'
-import parseCmd, { Cmd } from "./parseCmd"
-import { Node } from '@/lib/tree'
 import Post, { File } from "@/components/post"
+import { History, HistoryAction } from '@/components/terminal'
+import { Node } from '@/lib/tree'
+import Link from "next/link"
+import { useRouter } from "next/router"
 import { join } from 'path'
+import React from "react"
+import parseCmd, { Cmd } from "./parseCmd"
 
 export type HistoryObj = {
 	history: History

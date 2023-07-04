@@ -1,13 +1,12 @@
-import { useRouter } from 'next/router'
-import fs from 'fs/promises'
-import { join } from 'path'
-
 import { File } from '@/components/post'
 import Terminal from '@/components/terminal'
-import { tree, tree2list } from '@/lib/tree'
 import TerminalLayout from '@/layouts/terminal'
 import md2html from '@/lib/md2html'
+import { tree, tree2list } from '@/lib/tree'
 import { FS } from '@/shell'
+import fs from 'fs/promises'
+import { useRouter } from 'next/router'
+import { join } from 'path'
 
 export default function Content({ fs }: {
 	fs: FS
