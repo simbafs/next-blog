@@ -24,7 +24,9 @@ export async function getStaticProps(): Promise<{ props: { fs?: FS } }> {
 
 	const indexFile = await fs.readFile(path.join('content', indexFilename), 'utf-8')
 	if (indexFilename.endsWith('.md')) {
-		const { contentHTML, matter } = await md2html(indexFile)
+		const { contentHTML, matter } = await md2html(indexFile, {
+			absolutePath: `http://localhost:3000/`,
+		})
 		return {
 			props: {
 				fs: {

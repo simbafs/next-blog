@@ -26,13 +26,17 @@ export default function Content({ fs }: {
 export async function getStaticProps({ params }: {
 	params: { post: string[] }
 }): Promise<{ props: { fs: FS } }> {
+	console.log(params, join('https://localhost:3000', ...(params.post.slice(0, -1))))
+
 	const directory = await tree('content', { extensions: ['.md'] })
 	const filename = join(...params.post)
 	const postPath = join(process.cwd(), 'content', filename)
 
 	if ((await fs.stat(postPath)).isFile()) {
 		const content = (await fs.readFile(postPath)).toString()
-		const { contentHTML, matter } = await md2html(content)
+		const { contentHTML, matter } = await md2html(content, {
+			absolutePath: `http://localhost:3000/${join(...(params.post))}`,
+		})
 
 		return {
 			props: {

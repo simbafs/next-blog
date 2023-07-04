@@ -28,3 +28,34 @@ type fs = {
 我發現 `lib/tree` 有點怪怪的，包括路徑什麼的需要再細修，通用性不夠高，但今天懶得處理，之後再說吧
 
 把 `ls` 搞定了！灑花！接下來要嘛把程式碼整理的更通用（像是 `lib/tree`），或是可以開始吧舊 blog 搬過來了。
+
+開發陷入了瓶頸，有幾個問題
+1. 圖片
+因為我的檔案結構長這樣，
+```
+.
+├── content
+│   ├── asdf.ewrq
+│   ├── index.md
+│   └── post
+│       ├── helloWorld2.md
+│       ├── helloWorld.md
+│       ├── markdown
+│       │   ├── cat-yellow.png
+│       │   └── index.md
+│       └── test
+│           └── hi.md
+├── src
+│   ├── pages
+│   │   ├── 404.tsx
+│   │   ├── _app.tsx
+│   │   ├── _document.tsx
+│   │   ├── index.tsx
+│   │   └── [...post].tsx
+```
+所以像是 `cat-yellow.png` 其實不會被 nextjs 放進 static files 裡面，也就是說我搞定了圖片相對路徑問題也還是無法搞定圖片顯示，除非我把他們放到 `public/` 目錄下，但是那樣好醜，而且我很多舊的文章都不是這個作法，等於是搬遷的時候會非常痛苦  
+2. 輸出太大
+開 dev tool 看了一下，都是首頁，nextjs 的總傳輸量是 6.66MB，而 hugo 只有 297.88kB，一個在本機一個不知道放在哪裡，兩個的載入速度是一樣的。  
+
+真的好不想放棄現在的這個，但是基於以上原因好想放棄回去用 hugo，hugo 的話我只需要熟悉 golang tempalate 就跟研究出之前到底為什麼會 build 失敗可以自己做主題了，或是沿用現在這個也可以，現在這個主題其實很不錯。  
+沒意外的話應該會先把這個 repo 封存，先搞定 hugo 吧。
