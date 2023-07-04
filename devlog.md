@@ -14,3 +14,13 @@ type command = {
 
 # 2023-07-02
 今天幾乎把 terminal 重構，把 stdin 明確定義出來了，但是 fs 還沒，所以目前 `open`、`ls` 等指令不符合預期是正常的。現在一個指令輸入+輸出叫做一個 `<Cell />`，`Cell` 下有 `PS1`、`Input`、`Shell`，`PS1` 只是單純的 PS1，`Input` 會根據是否有給 `cmdIndex` 切換顯示之前的命令和一個輸入框，最後 `Shell` 會把指定 `cmdIndex` 的指令執行結果印出來。`shell` 裡的 `cmd` 也根據這次做出調整，首先是應該支援 pipe，還沒測試。然後 history 裡的值從 `string[]` 改成 `string`，需要的時候在丟進 `shell/tokenize` 切割。明天的任務是把 fs 實做出來，這樣 shell 就更完整了，至於 `&&`、`||` 這些看心情吧，不太需要。
+
+# 2023-07-04
+我在想，filesystem 需要哪些功能，首先是 `ls` 需要目前目錄下的檔案們，或是一個完整的檔案樹（只有檔名），然後如果現在是在檔案的話還要提供檔案內容，
+```ts
+type fs = {
+    directory: tree.Node
+    files?: string
+}
+```
+這樣全塞會不會讓網頁變很肥阿，還是說只放一層的檔案就好了？或是說做一個開關？

@@ -1,5 +1,6 @@
 import { useReducer } from 'react'
 import Cell from './Cell'
+import { FS } from '@/shell'
 
 export type History = string[]
 export type HistoryAction = {
@@ -7,9 +8,10 @@ export type HistoryAction = {
 	next?: string[]
 }
 
-export default function Terminal({ initCmd, stdin }: {
+export default function Terminal({ initCmd, stdin, fs }: {
 	initCmd?: History
 	stdin?: any[]
+	fs?: FS
 }) {
 	const [history, updateHistory] = useReducer(
 		(prev: History, action: HistoryAction) => {
@@ -28,6 +30,7 @@ export default function Terminal({ initCmd, stdin }: {
 				update: updateHistory,
 			}}
 			stdin={stdin?.[index]}
+			fs={fs}
 		/>)}
 		<Cell
 			historyObj={{

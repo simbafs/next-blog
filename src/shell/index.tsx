@@ -10,27 +10,31 @@ import LinkArray from "@/components/LinkArray"
 
 import { History, HistoryAction } from '@/components/terminal'
 import parseCmd, { Cmd } from "./parseCmd"
+import { Node } from '@/lib/tree'
+import Post, { File } from "@/components/post"
 
 export type HistoryObj = {
 	history: History
 	update: React.Dispatch<HistoryAction>
 }
 
-type Props = {
-	args: string[]
-	history: HistoryObj
-	stdin?: any
+export type FS = {
+	directory: Node
+	file?: File
 }
 
-// insertBetween([1,2,3,4], 10) = [1, 10, 2, 10, 3, 10, 4, 10]
-// function insertBetween(arr: any, between: any): any[] {
-// 	return arr.reduce((acc: any, curr: any) => [...acc, between, curr], []).slice(1)
-// }
+type Props = {
+	args: string[]
+	historyObj: HistoryObj
+	stdin?: any
+	fs?: FS
+}
 
-export default function Shell({ cmdIndex, historyObj, stdin }: {
+export default function Shell({ cmdIndex, historyObj, stdin, fs }: {
 	cmdIndex: number
 	historyObj: HistoryObj
 	stdin?: any
+	fs?: FS
 }) {
 	const cmdStr = historyObj.history[cmdIndex]
 
@@ -43,9 +47,9 @@ export default function Shell({ cmdIndex, historyObj, stdin }: {
 	do {
 		const cmdFn = cmds[cmd.current[0]]
 		if (cmdFn) {
-			stdout = cmdFn({ args: cmd.current, history: historyObj, stdin })
+			stdout = cmdFn({ args: cmd.current, historyObj, stdin, fs })
 		} else {
-			stdout = CommandNotFound({ args: cmd.current, history: historyObj, stdin })
+			stdout = CommandNotFound({ args: cmd.current, historyObj, stdin, fs })
 		}
 		if (cmd.conjunction === '|') {
 			stdin = stdout
@@ -57,21 +61,10 @@ export default function Shell({ cmdIndex, historyObj, stdin }: {
 	if (!stdout) {
 		return <></>
 	} else if (typeof stdout === 'string') {
-		return <div
-			className="prose lg:prose-xl hover:prose-a:underline-offset-1 max-w-none"
-			dangerouslySetInnerHTML={{ __html: stdout }}
-		/>
+		return <pre>{stdout}</pre>
 	} else {
 		return stdout
 	}
-
-	// if (!cmd) {
-	// 	return cmds['commandNotFound']({
-	// 		args: ['commandNotFound', ...args],
-	// 		history: terminal,
-	// 	})
-	// }
-	// return cmd({ args, history: terminal })
 }
 
 // helpers
@@ -101,14 +94,9 @@ export const cmdList = Object.keys(cmds)
 
 // cmds
 
-function Open({ stdin }: Props) {
-	if (Array.isArray(stdin)) {
-		return <LinkArray list={stdin} />
-	}
-	return <div
-		className="prose lg:prose-xl hover:prose-a:underline-offset-1 max-w-none"
-		dangerouslySetInnerHTML={{ __html: stdin }}
-	/>
+function Open({ fs }: Props) {
+	if (!fs?.file) return <></>
+	return <Post file={fs.file} />
 }
 
 function Reboot() {
@@ -117,32 +105,31 @@ function Reboot() {
 	return <></>
 }
 
-function Cd({ args, history }: Props) {
+function Cd({ args, historyObj: history }: Props) {
 	const router = useRouter()
 	history.update({ clear: true })
 	if (!args[1]) {
-		// console.log('1. cd /')
 		router.push('/')
 	} else if (args[1][0] === '/') {
-		// console.log('2. cd ' + args[1])
 		router.push(args[1])
 	} else {
-		// console.log('3. cd ' + args[1])
 		router.push(router.asPath + '/' + (args[1] || '/'))
 	}
 	return <></>
 }
 
 // ls('.', data)
-function Ls({ /*args,*/ stdin }: Props) {
-	// TODO base
-	const formatedDate = (date: Date) => `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
-	if (Array.isArray(stdin)) {
-		return <ul>
-			{stdin.map((file, index) => <li key={index}>• <span>{formatedDate(file.data.pubDate)}</span> <a className="underline hover:underline-offset-1" href={`/newBlog/post/${file.slug}`}>{file.data.title}</a></li>)}
-		</ul>
-	}
-	return <></>
+function Ls({ /*args,*/ fs }: Props) {
+	if (!fs) return <></>
+	return <pre>{JSON.stringify(fs, null, 2)}</pre>
+	// // TODO base
+	// const formatedDate = (date: Date) => `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`
+	// if (Array.isArray(stdin)) {
+	// 	return <ul>
+	// 		{stdin.map((file, index) => <li key={index}>• <span>{formatedDate(file.data.pubDate)}</span> <a className="underline hover:underline-offset-1" href={`/newBlog/post/${file.slug}`}>{file.data.title}</a></li>)}
+	// 	</ul>
+	// }
+	// return <></>
 }
 
 function CommandNotFound({ args }: Props) {
@@ -156,12 +143,12 @@ function Echo({ args/*, termianl*/ }: Props) {
 	</>
 }
 
-function Clear({ history }: Props) {
+function Clear({ historyObj: history }: Props) {
 	history.update({ clear: true })
 	return <></>
 }
 
-function Help({ history: terminal }: Props) {
+function Help({ historyObj: terminal }: Props) {
 	return <>
 		<p>Available commands: </p>
 		<ul>
@@ -195,7 +182,7 @@ function Banner404() {
 	</>
 }
 
-function Banner({ history: terminal }: Props) {
+function Banner({ historyObj: terminal }: Props) {
 	return <>
 		<div className="overflow-scroll break-keep">
 			<pre>╱╭━━━╮╱╱╭━━╮╱╱╭━╮╭━╮╱╱╭━━╮╱╱╱╭━━━╮╱╱╭━━━╮╱╱╭━━━╮╱╱╱╱╱╱╭━━━╮╱╱╭━━━╮╱</pre>

@@ -1,17 +1,17 @@
 import fs from 'fs/promises'
 import { join, sep } from 'path'
 
-type Node = {
+export type Node = {
 	name: string
 	path: string
 	type: 'file' | 'directory' | 'null'
 	children?: Node[]
 }
 
-type OptTree = {
+type TreeOpt = {
 	extensions: string[]
 }
-async function tree(root: string, opt: OptTree) {
+async function tree(root: string, opt: TreeOpt) {
 	root = join(root)
 	const item = await fs.readdir(root)
 	const nodes: Node[] = (

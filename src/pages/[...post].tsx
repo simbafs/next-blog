@@ -7,55 +7,54 @@ import Terminal from '@/components/terminal'
 import { tree, tree2list } from '@/lib/tree'
 import TerminalLayout from '@/layouts/terminal'
 import md2html from '@/lib/md2html'
+import { FS } from '@/shell'
 
-export default function Content({ file, dirs }: {
-	file?: File
-	dirs?: string[]
+export default function Content({ fs }: {
+	fs: FS
 }) {
 	const router = useRouter()
 	const cwd = router.asPath.slice(1) + '/'
-	if (file) {
-		return <TerminalLayout title={`open ${file.filename}`} description='file'>
-			<Terminal initCmd={[`open ${file.filename}`]} stdin={[file.contentHTML]} />
+	if (fs.file) {
+		return <TerminalLayout title={`open ${fs.file.filename}`} description='file'>
+			<Terminal initCmd={[`open ${fs.file.filename}`]} fs={fs} />
 		</TerminalLayout>
 	}
-	if (dirs) {
-		return <TerminalLayout title={`open ${cwd}`} description='dir'>
-			<Terminal initCmd={[`open ${cwd}`]} stdin={[dirs]} />
-		</TerminalLayout>
-	}
-	return <TerminalLayout title="404" description='404'>
-		<Terminal />
+	return <TerminalLayout title={`ls ${cwd}`} description='dir'>
+		<Terminal initCmd={[`ls ${cwd}`]} fs={fs} />
 	</TerminalLayout>
 }
 
 export async function getStaticProps({ params }: {
 	params: { post: string[] }
-}) {
+}): Promise<{ props: { fs: FS } }> {
+	const directory = await tree('content', { extensions: ['.md'] })
 	const filename = join(...params.post)
 	const postPath = join(process.cwd(), 'content', filename)
+
 	if ((await fs.stat(postPath)).isFile()) {
 		const content = (await fs.readFile(postPath)).toString()
 		const { contentHTML, matter } = await md2html(content)
 
 		return {
 			props: {
-				file: {
-					filename,
-					content,
-					contentHTML,
-					matter,
-				} as File,
+				fs: {
+					directory,
+					file: {
+						filename,
+						content,
+						contentHTML,
+						matter,
+					} as File,
+				}
 			},
 		}
 	} else {
-		const dirs = tree2list(
-			await tree(postPath, { extensions: ['.md'] }),
-			{ sliceHead: 7 }
-		)
-
 		return {
-			props: { dirs: dirs },
+			props: {
+				fs: {
+					directory,
+				}
+			},
 		}
 	}
 }
